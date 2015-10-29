@@ -11,10 +11,8 @@ var ip = "127.0.0.1";
 var server = http.createServer(handler.handleRequest);
 
 if (module.parent) {
-  console.log(module.parent);
   module.exports = server;
 } else {
-  console.log(module.parent);
   server.listen(port, ip);
   console.log("Listening on http://" + ip + ":" + port);
 }

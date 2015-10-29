@@ -1,37 +1,67 @@
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var httpHelpers = require('./http-helpers');
-// require more modules/folders here!
+var url = require('url');
+var fs = require('fs');
 
-if(path.exists("sites.txt", req.url){
-  httpHelpers.serveAsset(res);
-  //server whatever we type if exists.      
-}
+var actions = {
+  'GET': function(req, res){
+    var parts = url.parse(req.url);
+    var urlPart = parts.pathname === '/' ? '/index.html' : parts.pathname;
 
-exports.handleRequest = function (req, res) {
-
-  if(req.method == "GET"){
-    if(req.url === "/"){
-      httpHelpers.serveIndex(res);      
-    //cheack if site file exist. //fs.exists(file, function(exist))
-    } else if( req.url ) {
-      if( req.url )
+    var publicSite = archive.paths.siteAssets + urlPart;
+    var archiveSite = archive.paths.archivedSites + urlPart;
+    // console.log('url',req.url);
+    // console.log('publicSite', publicSite);
+    // console.log('archiveSite', archiveSite);
+    // console.log(parts);
+    if(req.url === "/favicon.ico"){
+      httpHelpers.send404(res);
+    } else {
+        fs.readFile(publicSite, 'utf8', function(err, data){
+        if(err) {//if publicSite does not exist
+          //look one in the archiveSite.
+          fs.readFile(archiveSite, 'utf8', function(err, data){
+            if(err) {
+              console.log('send404 zone')
+              //return loading page;
+              httpHelpers.send404(res);
+            } else {
+              console.log("hit archiveSite");
+              httpHelpers.sendRespond(res, data);
+            }
+          });
+        } else { //the file exists in the publicSite
+          console.log("hit publicSite");
+          httpHelpers.sendRespond(res, data);
+        }
+      });
     }
-    //else 
-
-    console.log(archive.paths.archivedSites);
-    console.log(archive.paths.list);
-
-    //when we put /www.google.com(url) in the input on the client, 
-    //it will response with page /google/ and 200
-    
+  },
+  'POST': function(req, res){
+    var list = archive.paths.list;
+    req.on('data', function(data){
+      var url = data.toString('utf8').substring(4);
+      //url=www.google.com
+      // console.log('post data', url);
+      fs.appendFile(list, url+'\n', 'utf8', function(err){
+        if(err) {
+          throw err;
+        } else {
+          console.log('the url has been appended to sites.txt file')
+        }
+      });
+    });
+    res.writeHead(302, {'Content-Type': "text/html"});
+    res.end();
   }
-  // res.end(archive.paths.list);
-  // res.end('/<input/');
-  console.log(archive.paths.archivedSites);
-  console.log(archive.paths.list);
 };
 
-fs.exists('/etc/passwd', function (exists) {
-  console.log(exists ? "it's there" : 'no passwd!');
-});
+//url=www.google.com
+
+exports.handleRequest = function (req, res) {
+    var action = actions[req.method];
+    if(action){
+      actions ? action(req, res) : httpHelpers.send404(res);
+    }    
+};

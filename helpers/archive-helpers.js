@@ -12,7 +12,7 @@ var _ = require('underscore');
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'), //"/users/nodefolder/web/public"
   archivedSites: path.join(__dirname, '../archives/sites'),
-  list: path.join(__dirname, '../archives/sites.txt')
+  list: path.join(__dirname, '../archives/sites.txt'),
 };
 
 // Used for stubbing paths for tests, do not modify
@@ -25,10 +25,35 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.readListOfUrls = function(callback){
+  var urlList = [];
+  var list = exports.paths.list;
+  fs.readFile(list, function(err, data){
+    if(err) throw err;
+    urlList = data.toString().split('\n');
+    // console.log(urlList);
+    callback(urlList);
+  });
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = function(url, callback){
+  var result = false;
+  // var urlList = exports.readListOfUrls();
+
+  var urlList = [];
+  var list = exports.paths.list;
+  fs.readFile(list, function(err, data){
+    if(err) throw err;
+    urlList = data.toString().split('\n');
+    // console.log(urlList);
+    for(var i=0; i<urlList.length; i++){
+      if(urlList[i] === url){
+        result = true;
+        // console.log(result)
+        callback(result);
+      }
+    }
+  });
 };
 
 exports.addUrlToList = function(){
@@ -38,4 +63,10 @@ exports.isUrlArchived = function(){
 };
 
 exports.downloadUrls = function(){
+  //
 };
+
+///////------------test
+// exports.isUrlInList('www.google.com',function(result){
+//   if(result) console.log(result);
+// })
