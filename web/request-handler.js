@@ -41,10 +41,11 @@ var actions = {
   'POST': function(req, res){
     var list = archive.paths.list;
     req.on('data', function(data){
-      var url = data.toString('utf8').substring(4);
+      var url = data.toString().substring(4);
       //url=www.google.com
-      // console.log('post data', url);
-      fs.appendFile(list, url+'\n', 'utf8', function(err){
+      console.log('post data', url);
+      fs.appendFile(list, url+"test"+'\n', 'utf8', function(err){
+        //l":"www.example.com"}
         if(err) {
           throw err;
         } else {

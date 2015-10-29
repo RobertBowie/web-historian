@@ -50,9 +50,9 @@ exports.isUrlInList = function(url, callback){
       if(urlList[i] === url){
         result = true;
         // console.log(result)
-        callback(result);
       }
     }
+    callback(result);
   });
 };
 
@@ -66,7 +66,7 @@ exports.downloadUrls = function(){
   //
 };
 
-///////------------test
-// exports.isUrlInList('www.google.com',function(result){
-//   if(result) console.log(result);
-// })
+/////------------test
+exports.isUrlInList('www.google.com',function(result){
+  console.log(result)
+})
