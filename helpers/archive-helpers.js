@@ -57,7 +57,6 @@ exports.addUrlToList = function(url, callback){
   var result = false;
   var list = exports.paths.list;
   fs.appendFile(list, url+'\n', 'utf8', function(err){
-  //l":"www.example.com"}
     if(err) {
       throw err;
     } else {
@@ -88,6 +87,5 @@ exports.downloadUrls = function(urlsList){
 // exports.isUrlInList('www.google.com',function(result){
 //   console.log(result)
 // })
-
-exports.downloadUrls(['www.naver.com','www.hotmail.com']);
+// exports.downloadUrls(['www.naver.com','www.hotmail.com']);
 

@@ -11,10 +11,6 @@ var actions = {
 
     var publicSite = archive.paths.siteAssets + urlPart;
     var archiveSite = archive.paths.archivedSites + urlPart;
-    // console.log('url',req.url);
-    // console.log('publicSite', publicSite);
-    // console.log('archiveSite', archiveSite);
-    // console.log(parts);
     if(req.url === "/favicon.ico"){
       httpHelpers.send404(res);
     } else {
@@ -46,7 +42,6 @@ var actions = {
     var loadingSite = archive.paths.siteAssets + 'loading.html' ;
     req.on('data', function(data){
       url = data.toString().substring(4);
-      //url=www.google.com
       console.log('post data', url);
       // check if the url exists in the sites.txt
       archive.isUrlInList(url, function(inList) {
@@ -75,8 +70,6 @@ var actions = {
     });
   }
 };
-
-//url=www.google.com
 
 exports.handleRequest = function (req, res) {
     var action = actions[req.method];
