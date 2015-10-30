@@ -1,7 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-
+var http = require('http');
+var request = require('request');
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -31,42 +32,62 @@ exports.readListOfUrls = function(callback){
   fs.readFile(list, function(err, data){
     if(err) throw err;
     urlList = data.toString().split('\n');
-    // console.log(urlList);
     callback(urlList);
   });
 };
 
 exports.isUrlInList = function(url, callback){
   var result = false;
-  // var urlList = exports.readListOfUrls();
-
   var urlList = [];
   var list = exports.paths.list;
+
   fs.readFile(list, function(err, data){
     if(err) throw err;
     urlList = data.toString().split('\n');
-    // console.log(urlList);
     for(var i=0; i<urlList.length; i++){
       if(urlList[i] === url){
         result = true;
-        // console.log(result)
       }
     }
     callback(result);
   });
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(url, callback){
+  var result = false;
+  var list = exports.paths.list;
+  fs.appendFile(list, url+'\n', 'utf8', function(err){
+  //l":"www.example.com"}
+    if(err) {
+      throw err;
+    } else {
+      console.log('the url has been appended to sites.txt file');
+      result = true;
+    }
+    callback(result);
+  });
 };
 
-exports.isUrlArchived = function(){
+exports.isUrlArchived = function(url, callback){
+  var sitePath = path.join(exports.paths.archivedSites, url);
+  fs.exists(sitePath, function(exists) {
+    callback(exists);
+  });
 };
 
-exports.downloadUrls = function(){
-  //
+exports.downloadUrls = function(urlsList){
+  var dest = exports.paths.archivedSites;
+  _.each(urlsList, function(url) {
+    if (!url) return;
+      console.log(url);
+    request('http://' + url).pipe(fs.createWriteStream(dest + '/' + url));
+  });
 };
 
 /////------------test
-exports.isUrlInList('www.google.com',function(result){
-  console.log(result)
-})
+// exports.isUrlInList('www.google.com',function(result){
+//   console.log(result)
+// })
+
+exports.downloadUrls(['www.naver.com','www.hotmail.com']);
+
